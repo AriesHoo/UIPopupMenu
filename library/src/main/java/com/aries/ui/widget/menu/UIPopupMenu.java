@@ -36,7 +36,7 @@ public class UIPopupMenu {
     private boolean clickDismissible = true;
 
     private static final int DEFAULT_ANIM_STYLE = R.style.PopupMenuStyle;
-    private int animationStyle;
+    private int animationStyle = DEFAULT_ANIM_STYLE;
 
     private float alpha = 0.5f;
     private OnMenuItemClickListener mOnMenuItemClickListener;
@@ -54,13 +54,12 @@ public class UIPopupMenu {
         content = LayoutInflater.from(mContext).inflate(R.layout.layout_popup_menu, null);
         scrollViewMain = (ScrollView) content.findViewById(R.id.sv_main);
         layoutMain = (LinearLayout) content.findViewById(R.id.lLayout_main);
+
         mPopupWindow = new PopupWindow(mContext);
         mPopupWindow.setContentView(content);
         mPopupWindow.setHeight(LinearLayout.LayoutParams.WRAP_CONTENT);
         mPopupWindow.setWidth(LinearLayout.LayoutParams.WRAP_CONTENT);
-        if (animationEnable) {
-            mPopupWindow.setAnimationStyle(animationStyle <= 0 ? DEFAULT_ANIM_STYLE : animationStyle);
-        }
+        mPopupWindow.setAnimationStyle(animationStyle);
         mPopupWindow.setFocusable(true);
         mPopupWindow.setOutsideTouchable(true);
         mPopupWindow.setBackgroundDrawable(new ColorDrawable());
@@ -151,6 +150,11 @@ public class UIPopupMenu {
      */
     public UIPopupMenu setAnimationEnable(boolean animationEnable) {
         this.animationEnable = animationEnable;
+        if (animationEnable) {
+            mPopupWindow.setAnimationStyle(animationStyle);
+        } else {
+            mPopupWindow.setAnimationStyle(0);
+        }
         return this;
     }
 
@@ -162,6 +166,20 @@ public class UIPopupMenu {
      */
     public UIPopupMenu setAnimationStyle(int style) {
         this.animationStyle = style;
+        if (animationEnable) {
+            mPopupWindow.setAnimationStyle(animationStyle);
+        }
+        return this;
+    }
+
+    /**
+     * 设置是否点击item popupMenu dismiss
+     *
+     * @param clickDismissible
+     * @return
+     */
+    public UIPopupMenu setClickDismissible(boolean clickDismissible) {
+        this.clickDismissible = clickDismissible;
         return this;
     }
 
@@ -186,6 +204,9 @@ public class UIPopupMenu {
 
     public UIPopupMenu show() {
         setItems();
+        if (animationEnable) {
+            mPopupWindow.setAnimationStyle(animationStyle <= 0 ? DEFAULT_ANIM_STYLE : animationStyle);
+        }
         if (!mPopupWindow.isShowing() && anchor != null) {
             mPopupWindow.showAsDropDown(anchor, xOff, yOff);
             setBackgroundAlpha(alpha);
